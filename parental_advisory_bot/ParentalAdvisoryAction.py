@@ -23,19 +23,21 @@ class ParentalAdvisoryAction(MentionAction):
                         return True
         return False
 
-    def paste_parental_advisory_on_image(self, path_to_image, is_border):
+    def paste_parental_advisory_on_image(self, path_to_image, is_border=False):
         original_image = Image.open(path_to_image)
         parental_advisory_image = Image.open('parental_advisory.png')
 
         original_height, original_width = original_image.size
 
-        paste_height = int(original_height / 6)
-        paste_width = int(original_width / 6)
+        parental_advisory_image_thumbnail_size = max(int(original_height / 6), int(original_width / 6))
 
-        parental_advisory_image.thumbnail((paste_height, paste_width), Image.ANTIALIAS)
+        parental_advisory_image.thumbnail((parental_advisory_image_thumbnail_size, parental_advisory_image_thumbnail_size),
+                                          Image.ANTIALIAS)
+        parental_advisory_image_height, parental_advisory_image_width = parental_advisory_image.size
 
-        paste_height = int(original_height - paste_height * 1.3)
-        paste_width = int(original_width - paste_width)
+        move_factor = 1.3
+        paste_height = int(original_height - parental_advisory_image_height * move_factor)
+        paste_width = int(original_width - parental_advisory_image_width * move_factor)
 
         original_image.paste(parental_advisory_image, (paste_height, paste_width))
 
