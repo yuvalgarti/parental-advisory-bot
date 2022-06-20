@@ -13,7 +13,7 @@ class ParentalAdvisoryAction(MentionAction):
         self.logger = logging.getLogger(__name__)
 
     def save_tweet_image(self, tweet):
-        if tweet.entities and tweet.entities['media']:
+        if 'media' in tweet.entities:
             image = tweet.entities['media'][0]
             if image['media_url']:
                 response = requests.get(image['media_url'])
@@ -48,11 +48,11 @@ class ParentalAdvisoryAction(MentionAction):
 
     def run(self, mention):
         comment = self.api.get_status(mention.in_reply_to_status_id)
+        status = '@' + mention.user.screen_name
         if self.save_tweet_image(comment):
             path_to_file = comment.id_str + '.jpg'
             is_border = "border" in mention.text.lower()
             self.paste_parental_advisory_on_image(path_to_file, is_border)
-            status = '@' + mention.user.screen_name
             if self.is_production:
                 media = self.api.media_upload(path_to_file)
                 try:
@@ -66,3 +66,10 @@ class ParentalAdvisoryAction(MentionAction):
             else:
                 self.logger.info('TESTING MODE - path_to_file: {}, status: {}, in_reply_to_status_id: {}, '
                                  .format(path_to_file, status, mention.id))
+        else:
+            status = ' There is no media in this tweet :('
+            if self.is_production:
+                self.api.update_status(status=status, in_reply_to_status_id=mention.id)
+            else:
+                self.logger.info('TESTING MODE - status: {}, in_reply_to_status_id: {}, '
+                                 .format(status, mention.id))
