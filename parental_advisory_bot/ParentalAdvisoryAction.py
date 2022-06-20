@@ -67,7 +67,7 @@ class ParentalAdvisoryAction(MentionAction):
                 self.logger.info('TESTING MODE - path_to_file: {}, status: {}, in_reply_to_status_id: {}, '
                                  .format(path_to_file, status, mention.id))
         else:
-            status = ' There is no media in this tweet :('
+            status = status + ' There is no media in this tweet :('
             if self.is_production:
                 self.api.update_status(status=status, in_reply_to_status_id=mention.id)
             else:
