@@ -1,0 +1,4 @@
+tweepy~=3.10.0
+mention_bot~=2.1
+pyrebase5==5.0.1
+pillow==9.1.1
